@@ -1,0 +1,106 @@
+Scope:
+{
+    parent: null,
+    id_table: [{name, data_type, is_function, is_defined, ret_data_type}, ... ],
+    operations:[]
+}
+
+Structure of operations tree
+
+LET:
+{
+    type: 0,
+    label: undefined,
+    identifier: name_ptr
+}
+
+ASSIGN:
+{
+    type: 1,
+    label: 0, //undefined if isn't labeled
+    identifier: name_ptr,
+    expression: {} // syntax-tree here
+}
+
+GOTO:
+{
+    type: 2,
+    label: undefined,
+    to: 228
+}
+
+IF:
+{
+    type: 3,
+    label: undefined,
+    expression: {},
+    then: [], // scope with other operations
+    else: undefined // [] if defined
+}
+
+PRINT:
+{
+    type: 4,
+    label: undefined,
+    list: [tmp_name_ptr, tmp_name_ptr ...]
+}
+
+INPUT:
+{
+    type: 5,
+    label: undefined,
+    list: [tmp_name_ptr, tmp_name_ptr ...]
+}
+
+DIM:
+{
+    type: 6,
+    label: undefined,
+    name: name_ptr,
+    data_type: 0,
+    list_diminitions: [int, int ...]
+}
+
+CALL:
+{
+    type: 7,
+    label: undefined,
+    calle: name_ptr,
+    return_data_type: undefined
+}
+
+WHILE:
+{
+    type: 8,
+    label: undefined,
+    expression: expr,
+    branch: {} //aka scope
+}
+
+FOR:
+{
+    type: 9,
+    label: undefined,
+    counter: name_ptr,
+    start: number,
+    until: int_number,
+    step: 1, // 1 by default
+    branch: {}
+}
+
+DECLFUN:
+{
+    type: 10,
+    label: undefined,
+    fun_name: name_ptr,
+    args: [name_ptr, ...]
+}
+
+DEFFUN:
+{
+    type: 11,
+    label: undefined,
+    fun_name: name_ptr,
+    args: [name_ptr, ...],
+    branch: {}
+}

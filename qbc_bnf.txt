@@ -1,0 +1,125 @@
+"Case Sensitive" = False 
+"Start Symbol"   = <Lines>
+
+<String Chars>::= {Printable} - ["]
+<NewLine>     ::= [CR, LF]+ | [CR]+
+
+<Letter>      ::= [a-zA-Z]
+<digit>       ::= [0-9]
+<Symbols>     ::= [_-]
+<Space>       ::= ' '
+
+<Remark>      ::= REM {Space}* {Printable}*
+<Sub ID>      ::= {Letter}+({Letter}?{digit}?{Symbols}?)*
+<Type>        ::= [$%!#]
+<ID>          ::= <SUB ID> | <Typed ID>
+<Typed ID>    ::= <SUB ID><Type>
+
+<String>      ::= '"'{String Chars}*'"' 
+<Integer>     ::= [-]?{digit}+ 
+<Real>        ::= [-]?{digit}+.{digit}+ 
+
+<Lines>        ::= <Line> <NewLine> <Lines>  | <Line>
+                 | <Labeled Line> <NewLine> <Lines> | <Labeled Line>
+
+<Line>        ::= <Statements>
+<Labeled Line> ::= <Integer> <Statements>
+
+<Statements>  ::= <Statement> ':' <Statements> | <Statement>
+
+<Statement>   ::= <Let ID>
+                | <Assign ID>
+                | GOTO <Integer>
+                | <Remark>
+                | PRINT <Print list>
+                | INPUT <ID List>
+                | <Loop>
+                | <Array access>
+                | <Function>
+                | <Call Function>	
+   
+                
+<Array declare> ::= DIM <ID> '(' <Integer List> ')' AS <TYPE>        
+<Array access>  ::= <ID> '(' Integer List ')' 
+                  | <ID> '(' Integer List ')' '=' <Expression>
+
+<Assign ID> ::= <ID> '=' <Expression>
+<Let ID> ::= LET <Assign ID>
+
+<If>          ::= IF <Expression> THEN <Lines> <NewLine> <If end>  
+                | IF <Expression> THEN <Lines> ELSE <Lines> <NewLine> <If end> 
+<If end>      ::= END IF | ':' END IF
+
+<Loop>        ::= <For loop> | <While loop>
+
+<For loop>    ::= FOR <ID> '=' <Expression> TO <Expression> <Lines> <NewLine> <For end>
+                | FOR <ID> '=' <Expression> TO <Expression> STEP <Integer> <Lines> <NewLine> <For end>
+<For end>     ::= NEXT <ID> | ':' NEXT <ID>
+
+<While loop>  ::= WHILE <Expression> <Lines>  <NewLine>  <While end>
+<While end>   ::= WEND | ':' WEND
+
+<Function>    ::= DECLARE Function <ID> '('<FuncArgs List>')'
+                | FUNCTION <Typed ID> '('<FuncArgs List>')' <Lines> <NewLine> END FUNCTION
+
+<Call Function> ::= <Typed ID> '('<FuncArgs List>')'
+
+<TYPE> ::= INTEGER | LONG | SINGLE | DOUBLE | STRING
+
+<ID List>       ::= <Typed ID> ',' <ID List> | <Typed ID> 
+<FuncArgs List> ::= <ID List>
+
+<Value List>      ::= <Value> ',' <Value List> 
+                | <Value> 
+
+<Constant List>   ::= <Constant> ',' <Constant List> 
+                | <Constant> 
+
+<Integer List>    ::= Integer ',' <Integer List>
+                | Integer
+
+<Expression List> ::= <Expression> ',' <Expression List> 
+                | <Expression> 
+
+<Print List>      ::= <Expression List> ';' <Print List>
+                | <Expression> 
+
+<Expression>  ::= <And Exp> OR <Expression> 
+                | <And Exp> 
+
+<And Exp>     ::= <Not Exp> AND <And Exp> 
+                | <Not Exp> 
+ 
+<Not Exp>     ::= NOT <Compare Exp> 
+                | <Compare Exp> 
+
+<Compare Exp> ::= <Add Exp> '='  <Compare Exp> 
+                | <Add Exp> '<>' <Compare Exp> 
+                | <Add Exp> '>'  <Compare Exp> 
+                | <Add Exp> '>=' <Compare Exp> 
+                | <Add Exp> '<'  <Compare Exp> 
+                | <Add Exp> '<=' <Compare Exp> 
+                | <Add Exp> 
+
+<Add Exp>     ::= <Mult Exp> '+' <Add Exp> 
+                | <Mult Exp> '-' <Add Exp> 
+                | <Mult Exp> 
+
+<Mult Exp>    ::= <Negate Exp> '*' <Mult Exp> 
+                | <Negate Exp> '/' <Mult Exp> 
+                | <Negate Exp> 
+
+<Negate Exp>  ::= '-' <Power Exp> 
+                | <Power Exp> 
+
+<Power Exp>   ::= <Power Exp> '^' <Value> 
+                | <Value> 
+
+<Value>       ::= '(' <Expression> ')'
+                | <ID> 
+                | <ID> '(' <Expression List> ')'
+                | <Constant> 
+
+<Constant>    ::= <Integer> 
+                | <String> 
+                | <Real> 

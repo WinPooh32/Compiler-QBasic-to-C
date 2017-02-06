@@ -17,7 +17,7 @@ function constant(){
                 expected("Closing \"");
             }
         }
-        
+
         State.token = string;
         State.type = KeyWords.String;
         State.push_token();
@@ -444,15 +444,13 @@ function function_arguments(){
     State.mvnext();
 }
 
-function function_decl(){
+function function_decl(label){
     State.token = get_name();
     State.type = KeyWords[State.token.toUpperCase()];
     
     console.log(State.token);
     
     if(State.type === KeyWords.FUNCTION){
-        var label = get_label();
-
         State.push_token();
         
         skip_white();
@@ -553,6 +551,8 @@ function statement(){
                 
             }else if (State.cur() === "("){
                 function_expr_arguments();
+            }else{
+                expected("Statement");
             }
         }
         else if(type === KeyWords.LET){
@@ -836,7 +836,7 @@ function statement(){
             State.push_token();
 
             skip_white();
-                function_decl();
+                function_decl(label);
             skip_white();
         }
         else if(type === KeyWords.FUNCTION){

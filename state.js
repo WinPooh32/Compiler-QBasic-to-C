@@ -103,8 +103,9 @@ var State =
     push_assign: function(idennifier_idx, expr_last_idx, label){
         var token_data_type = get_token_type(this.Tokens_List[idennifier_idx].token);
         var ExprTokens = this.Tokens_List.slice(idennifier_idx + 2, expr_last_idx); // +2 skips '=' token and id
+        var type = resolve_expression(this.scope, ExprTokens, token_data_type);
 
-        this.scope.operations.push(mk_operation_assign(this.scope, idennifier_idx, token_data_type, ExprTokens, label));
+        this.scope.operations.push(mk_operation_assign(this.scope, idennifier_idx, type, ExprTokens, label));
     },
 
     push_goto: function (go_to, label) {

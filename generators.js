@@ -4,6 +4,7 @@
 //Operations generators
 
 function push_identifier(scope, id_obj){
+    id_obj.token.token = id_obj.token.token.toUpperCase();
     scope.id_table.push(id_obj);
     return id_obj;
 }
@@ -62,6 +63,8 @@ function mk_operation_assign(scope, id_token_idx, type, expression_raw_tokens, l
     if(id === null){
         throw new semantic_error("Identifier \"" + token.token + "\" is not defined there");
     }
+
+    id.data_type = type;
     
     return {
         type: Operations.ASSIGN,

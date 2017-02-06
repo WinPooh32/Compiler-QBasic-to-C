@@ -82,3 +82,12 @@ const DataTypes = {
     "DOUBLE":   3,
     "STRING":   4,  
 };
+
+const Priorites = [
+    [39, 40], // (, )
+    [28, 29, 30, 31, 32, 33], //compare operators
+    [25, 26, 27], //AND, OR, NOT
+    [34, 35], // +, -
+    [36, 37], // *, /
+    [38] // ^
+];

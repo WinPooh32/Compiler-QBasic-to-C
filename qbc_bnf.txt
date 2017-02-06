@@ -14,16 +14,17 @@
 <Type>        ::= [$%!#]
 <ID>          ::= <SUB ID> | <Typed ID>
 <Typed ID>    ::= <SUB ID><Type>
+<ID OR CONST> ::= <Typed ID> | <Constant>
 
 <String>      ::= '"'{String Chars}*'"' 
 <Integer>     ::= [-]?{digit}+ 
 <Real>        ::= [-]?{digit}+.{digit}+ 
 
-<Lines>        ::= <Line> <NewLine> <Lines>  | <Line>
+<Lines>       ::= <Line> <NewLine> <Lines>  | <Line>
                  | <Labeled Line> <NewLine> <Lines> | <Labeled Line>
 
 <Line>        ::= <Statements>
-<Labeled Line> ::= <Integer> <Statements>
+<Labeled Line>::= <Integer> <Statements>
 
 <Statements>  ::= <Statement> ':' <Statements> | <Statement>
 
@@ -117,7 +118,7 @@
 
 <Value>       ::= '(' <Expression> ')'
                 | <ID> 
-                | <ID> '(' <Expression List> ')'
+                | <ID> '(' <FuncArgs List> ')'
                 | <Constant> 
 
 <Constant>    ::= <Integer> 

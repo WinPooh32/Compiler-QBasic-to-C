@@ -83,6 +83,7 @@ function mk_operation_goto(go_to, label_val){
 }
 
 function mk_operation_if(scope, expression_raw_tokens, label_val){
+    resolve_expression(scope, expression_raw_tokens, DataTypes.INTEGER);
     return{
         type: Operations.IF,
         label: label_val,

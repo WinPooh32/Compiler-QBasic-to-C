@@ -44,8 +44,8 @@
 <Array access>  ::= <ID> '(' Integer List ')' 
                   | <ID> '(' Integer List ')' '=' <Expression>
 
-<Assign ID> ::= <ID> '=' <Expression>
-<Let ID> ::= LET <Assign ID>
+<Assign ID>     ::= <ID> '=' <Expression>
+<Let ID>        ::= LET <Assign ID>
 
 <If>          ::= IF <Expression> THEN <Lines> <NewLine> <If end>  
                 | IF <Expression> THEN <Lines> ELSE <Lines> <NewLine> <If end> 
@@ -63,7 +63,8 @@
 <Function>    ::= DECLARE Function <ID> '('<FuncArgs List>')'
                 | FUNCTION <Typed ID> '('<FuncArgs List>')' <Lines> <NewLine> END FUNCTION
 
-<Call Function> ::= <Typed ID> '('<FuncArgs List>')'
+<Call Function> ::= <Typed ID> '(' <Call list> ')'
+<Call list> ::= <ID OR CONST> ',' <Call list> | <ID OR CONST>
 
 <TYPE> ::= INTEGER | LONG | SINGLE | DOUBLE | STRING
 
@@ -82,7 +83,7 @@
 <Expression List> ::= <Expression> ',' <Expression List> 
                 | <Expression> 
 
-<Print List>      ::= <Expression List> ';' <Print List>
+<Print List>      ::= <Expression List> ',' <Print List>
                 | <Expression> 
 
 <Expression>  ::= <And Exp> OR <Expression> 
@@ -118,7 +119,7 @@
 
 <Value>       ::= '(' <Expression> ')'
                 | <ID> 
-                | <ID> '(' <FuncArgs List> ')'
+                | <Call Function>
                 | <Constant> 
 
 <Constant>    ::= <Integer> 

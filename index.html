@@ -163,11 +163,12 @@
     <!--<div class= "resizable ui-widget-content">-->
     <div id="editor" class="resizable ui-widget-content" style="margin-top: 10px;">REM program starts here :)
 
-REM LET statement
-let ok = NOT( -(50 + 2) ^ 2 AND ( NOT a OR b) + 100.500 )
 let a = 0
 let b = 0
 let c = 0
+
+REM LET statement
+let ok = NOT( -(50 + 2) ^ 2 AND ( NOT a OR b) + 100.500 )
 
 
 REM Labeled statements
@@ -180,6 +181,9 @@ GOTO 200
 
 REM Assign statement =
 let ar$ = "this is string" + "other string"
+
+let fine = 0
+let bad = 1
 
 REM inline many statements
 let how_are_you = fine OR bad : let var = "OK"
@@ -200,11 +204,6 @@ REM Function definition
 REM Call function
 _func%( any%, arg!, here$)
 
-REM Call function without arguments
-func$()
-
-REM Call as previous function call without arguments aka procedure call
-func
 
 REM PRINT statement
 PRINT "any", "expression here", 123 + 234, 2 and 4
@@ -213,7 +212,7 @@ REM INPUT statement
 INPUT only, identifiers, here
 
 REM While loop statement
-WHILE a < c < 100.500
+WHILE (a < c) < 100.500
 a = a + 1
 WEND
 
@@ -224,7 +223,7 @@ let k = k + i/2
 NEXT i
 
 REM Variant 2
-FOR i = 0 TO 100500 STEP 0.432
+FOR i = 0 TO 100500 STEP 432
 NEXT i
     </div>
     <!--</div>-->

@@ -40,7 +40,7 @@ function mk_operation_let(scope, id_token_idx, type, label_val){
     var token = State.Tokens_List[id_token_idx];
     
     if(find_idenifier(scope, token) !== null){
-        throw new semantic_error("\""+ token +"\" already defined");
+        throw new semantic_error("\""+ token.token +"\" already defined");
     }
     
     var id = push_identifier(scope, {

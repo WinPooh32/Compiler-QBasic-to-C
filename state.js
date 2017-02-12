@@ -131,6 +131,26 @@ var State =
         //set current scope to else branch
         this.scope = if_operation.else_branch;
     },
+
+    push_print: function (token_idx, last_arg_idx, label) {
+        var indices = [];
+
+        for(var i = token_idx + 1; i <= last_arg_idx; i++){
+            indices.push(i);
+        }
+
+        this.scope.operations.push(mk_operation_print(this.scope, indices, label));
+    },
+
+    push_input: function (token_idx, last_arg_idx, label) {
+        var indices = [];
+
+        for(var i = token_idx + 1; i <= last_arg_idx; i++){
+            indices.push(i);
+        }
+
+        this.scope.operations.push(mk_operation_input(this.scope, indices, label));
+    },
     
     push_dim: function(token_idx, token_end_list_idx, token_type_idx, label){
         var type_str = this.Tokens_List[token_type_idx].token;

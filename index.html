@@ -189,7 +189,7 @@ REM inline many statements
 let how_are_you = fine OR bad : let var = "OK"
 
 REM IF statement
-IF any AND (NOT(less OR more)) OR a < (b + c) THEN
+IF c AND (NOT(a OR b)) OR a < (b + c) THEN
 GOTO 300
 END IF
 
@@ -206,10 +206,10 @@ _func%( any%, arg!, here$)
 
 
 REM PRINT statement
-PRINT "any", "expression here", 123 + 234, 2 and 4
+PRINT a,b,c
 
 REM INPUT statement
-INPUT only, identifiers, here
+INPUT a, b, c
 
 REM While loop statement
 WHILE (a < c) < 100.500

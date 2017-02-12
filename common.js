@@ -106,6 +106,27 @@ function is_type(char){
     }
 }
 
+function is_number(scope, token){
+    var number;
+    var t_token = token.type;
+
+    if(t_token === KeyWords.Number){
+        number = true;
+    }else if(t_token === KeyWords.Ident) {
+        var ident = find_idenifier(scope, token);
+
+        if (ident === null) {
+            throw new semantic_error("\"" + token.token + "\" isn't defined");
+        }
+
+        number = ident.data_type !== DataTypes.STRING;
+    }else{
+        number = false;
+    }
+
+    return number;
+}
+
 function dim_type(string){
     var type = DataTypes[string.toUpperCase()];
     
@@ -233,7 +254,10 @@ function resolve_expression(scope, tokens_list, left_expected){
                 args_count = ident.args_types.length;
                 arg = -1;
             }
-        }else{
+        } else if(t_token === KeyWords["="]){
+            type = DataTypes.INTEGER;
+        }
+        else{
             continue;
         }
 

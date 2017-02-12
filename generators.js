@@ -93,11 +93,45 @@ function mk_operation_if(scope, expression_raw_tokens, label_val){
     };
 }
 
-function mk_operation_print(scope, id_token_idx, label_val){
+function mk_operation_print(scope, list_args_indeces, label_val){
+    var list = [];
+
+    for(var i in list_args_indeces){
+        var token = State.Tokens_List[list_args_indeces[i]];
+        var id = find_idenifier(scope, token);
+
+        if(id !== null){
+            list.push(id);
+        }else{
+            throw new semantic_error("Identifier isn't defined in this scope");
+        }
+    }
+
     return {
         type: Operations.PRINT,
         label: label_val,
-        list: []
+        list: list
+    };
+}
+
+function mk_operation_input(scope, list_args_indeces, label_val){
+    var list = [];
+
+    for(var i in list_args_indeces){
+        var token = State.Tokens_List[list_args_indeces[i]];
+        var id = find_idenifier(scope, token);
+
+        if(id !== null){
+            list.push(id);
+        }else{
+            throw new semantic_error("Identifier isn't defined in this scope");
+        }
+    }
+
+    return {
+        type: Operations.INPUT,
+        label: label_val,
+        list: list
     };
 }
 

@@ -412,11 +412,15 @@ function free_list(terminate_checker, token_getter, expected_str){
     }
     
     if(terminate_checker(State.cur())){
-        State.mvnext();
+        if(!is_newline_colon(State.cur())){
+            State.mvnext();
+        }
     }else{
         expected(expected_str);
     }
-    
+
+    //console.log(">" + State.cur() + "<");
+
     // if(!terminate_checker("\n") && !terminate_checker(":")){
     //     State.mvnext();
     // }
@@ -789,6 +793,20 @@ function statement(){
             State.token = get_name();
             State.type = KeyWords.Ident;
             State.push_token();
+
+
+            //Check NEXT i
+            var for_operation = State.get_parent_scope_last_operation();
+
+            if(for_operation !== null &&
+                for_operation.type !== Operations.FOR){
+                expected("Statement");
+            }
+
+            var next_token = for_operation.branch.id_table[0].token.token;
+            if(next_token !== State.token){
+                expected("Identifier \'" + next_token + "\' ");
+            }
             
             skip_white();
             
@@ -799,23 +817,34 @@ function statement(){
         else if(type === KeyWords.PRINT){
             State.type = type;
             State.push_token();
+
+            var token_idx = State.Tokens_List.length - 1;
+
             skip_white();
             
-            free_list(is_newline_colon, expression, "New line or :");
-            
+            //free_list(is_newline_colon, expression, "New line or :");
+            free_list(is_newline_colon, identifier, "New line or :");
+
+            var last_arg_idx = State.Tokens_List.length - 1;
+
+            State.push_print(token_idx, last_arg_idx, label);
+
             skip_white();
-            //skip_newline();
         }
         else if(type === KeyWords.INPUT){
 
-            var label = get_label();
-
             State.type = type;
             State.push_token();
+
+            var token_idx = State.Tokens_List.length - 1;
+
             skip_white();
             
             free_list(is_newline_colon, identifier, "New line or :");
-            
+
+            var last_arg_idx = State.Tokens_List.length - 1;
+            State.push_input(token_idx, last_arg_idx, label);
+
             skip_white();
         }
         else if(type === KeyWords.GOTO){

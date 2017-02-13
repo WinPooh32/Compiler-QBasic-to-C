@@ -1025,21 +1025,22 @@ function parse_with_output(text){
         parse_tokens(text);
         //output = JSON.stringify(State.Tokens_List, null, 4);
 
-        var cache = [];
-        output = (JSON.stringify(State.global_scope, function(key, value) {
-            if (typeof value === 'object' && value !== null) {
-                if (cache.indexOf(value) !== -1) {
-                    // Circular reference found, discard key
-                    return value.token;
-                }
-                // Store value in our collection
-                cache.push(value);
-            }
-            return value;
-        }, ' '));
-        cache = null; // Enable garbage collection
+        // var cache = [];
+        // output = (JSON.stringify(State.global_scope, function(key, value) {
+        //     if (typeof value === 'object' && value !== null) {
+        //         if (cache.indexOf(value) !== -1) {
+        //             // Circular reference found, discard key
+        //             return value.token;
+        //         }
+        //         // Store value in our collection
+        //         cache.push(value);
+        //     }
+        //     return value;
+        // }, ' '));
+        // cache = null; // Enable garbage collection
 
-        console.error(State.global_scope);
+        console.log(State.global_scope);
+        output = build_c_code(State.global_scope);
 
     }catch(ex){
         if(ex.name === "error_syntax"){

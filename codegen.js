@@ -211,6 +211,12 @@ function build_print(operation){
     return generate_print(operation.list);
 }
 
+function build_while(operation){
+    var expression = generate_expression(operation.expression);
+    var branch = build_from_subtree(operation.branch);
+
+    return "while("+expression+"){\n"+branch+"}";
+}
 
 function build_goto(operation){
     return "goto " + find_label_by_num(operation.to) + ";";
@@ -257,6 +263,7 @@ function build_operation(qbs_operation, result_accum){
             break;
 
         case Operations.WHILE:
+            result_accum += build_while(qbs_operation);
             break;
 
         case Operations.FOR:

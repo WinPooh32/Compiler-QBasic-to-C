@@ -138,6 +138,25 @@ function generate_new_line(){
     return "\n";
 }
 
+function generate_input(ids_list){
+    var str = "scanf(\"";
+    for(var i in ids_list){
+        str +=  TYPE_TO_PRINTF_FORMAT[ids_list[i].data_type];
+    }
+    str += "\"";
+
+    for(var i in ids_list){
+        if(ids_list[i].data_type !== DataTypes.STRING){
+            str += ", &" + ids_list[i].token.token;
+        }else{
+            str += ", " + ids_list[i].token.token;
+        }
+    }
+    str += ");";
+
+    return str;
+}
+
 function generate_print(ids_list){
     var str = "printf(\"";
     for(var i in ids_list){
@@ -186,7 +205,7 @@ function generate_array_declaration(array_name, array_type_id, sizes_list) {
         sizes += "["+sizes_list[i]+"]";
     }
 
-    return resolve_type(array_type_id) + array_name + sizes + ";";
+    return resolve_type(array_type_id) + " " + array_name + sizes + ";";
 }
 
 function generate_var_assign(var_name, str_expr){
@@ -207,8 +226,30 @@ function build_fun_declaration(operation) {
     return return_type+" "+id_name+" "+generate_fun_args_list(operation.fun_id.args_types, operation.fun_id.args_names)+";";
 }
 
+function build_input(operation){
+    return generate_input(operation.list);
+}
+
 function build_print(operation){
     return generate_print(operation.list);
+}
+
+function build_dim(operation){
+    return generate_array_declaration(operation.identifier.token.token,
+                                      operation.identifier.data_type,
+                                      operation.sizes);
+}
+
+function build_if(operation){
+    var expression  = generate_expression(operation.expression);
+    var then_branch = build_from_subtree(operation.then_branch);
+    var else_branch = "";
+
+    if(operation.else_branch){
+        else_branch = "else{\n" + build_from_subtree(operation.else_branch) + "}";
+    }
+
+    return "if("+expression+"){\n"+ then_branch + "}" + else_branch;
 }
 
 function build_while(operation){
@@ -216,6 +257,27 @@ function build_while(operation){
     var branch = build_from_subtree(operation.branch);
 
     return "while("+expression+"){\n"+branch+"}";
+}
+
+function build_for(operation){
+    var step_token = operation.step.token;
+    var counter_token = operation.counter.token;
+    var start_token = operation.start.token;
+    var until_token = operation.until.token;
+
+    var step = "";
+    var cmp_op = "<";
+
+    if(parseInt(step_token) < 0 ){
+        cmp_op = " >= ";
+        step = " = " + counter_token + " - " + step_token;
+    }else{
+        step = " = " + counter_token + " + " + step_token;
+    }
+
+    return "for(int " + operation.counter.token + " = " + start_token + "; " +
+            counter_token + cmp_op + until_token + "; " +
+            counter_token + step + "){\n" + build_from_subtree(operation.branch) + "}";
 }
 
 function build_goto(operation){
@@ -254,12 +316,18 @@ function build_operation(qbs_operation, result_accum){
             break;
 
         case Operations.INPUT:
+            result_accum += build_input(qbs_operation);
             break;
 
         case Operations.DIM:
+            result_accum += build_dim(qbs_operation);
             break;
 
         case Operations.CALL:
+            break;
+
+        case Operations.IF:
+            result_accum += build_if(qbs_operation);
             break;
 
         case Operations.WHILE:
@@ -267,6 +335,7 @@ function build_operation(qbs_operation, result_accum){
             break;
 
         case Operations.FOR:
+            result_accum += build_for(qbs_operation);
             break;
 
         case Operations.DECLFUN:
@@ -281,7 +350,7 @@ function build_operation(qbs_operation, result_accum){
 }
 
 function build_from_subtree(qbs_scope, result_accum){
-    if(typeof(result_accum) === 'undefined'){
+    if(!result_accum){
         result_accum = "";
     }
 

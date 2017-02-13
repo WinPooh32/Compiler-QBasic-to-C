@@ -157,6 +157,7 @@ function mk_operation_dim(scope, id_token_idx, dims_array, type, label_val){
 }
 
 function mk_operation_while(scope, expression_raw_tokens, label_val){
+    resolve_expression(scope, expression_raw_tokens, DataTypes.INTEGER);
     return {
         type: Operations.WHILE,
         label: label_val,

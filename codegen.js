@@ -14,7 +14,8 @@ const TYPE_TO_PRINTF_FORMAT = [
     "%s"
 ];
 
-var Used_Labels = {};
+var Used_Labels;
+var FunDeclarations;
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -46,11 +47,8 @@ function find_keyword(id){
 
 
 
-function convert_typed_var(qbs_typed_id_name, type){
-    if(typeof(type) === "undefined"){
-        return qbs_typed_id_name;
-    }
-
+function convert_typed_var(qbs_typed_id_name){
+    var type = qbs_typed_id_name.charAt(qbs_typed_id_name.length - 1);
     var prefix;
 
     switch(type){
@@ -72,18 +70,30 @@ function convert_typed_var(qbs_typed_id_name, type){
 
         case "#":
             prefix = "__double__";
+
+        default:
+            return qbs_typed_id_name;
     }
 
-    return prefix + qbs_typed_id_name;
+    return prefix + qbs_typed_id_name.slice(0, -1);
 }
 
-function generate_operator(op_id, left_str, right_str){
+function generate_operator(op_id){
     switch(op_id){
         case KeyWords["^"]:
             return " (T_T) ";
 
+        case KeyWords["AND"]:
+            return "&&";
+
+        case KeyWords["OR"]:
+            return "||";
+
+        case KeyWords["NOT"]:
+            return "!";
+
         default:
-            return left_str+" "+find_keyword(op_id)+" "+right_str;
+            return find_keyword(op_id);
     }
 }
 
@@ -91,9 +101,13 @@ function generate_expression(tokens){
     var str_expr = "";
 
     for(var i in tokens){
-        if(tokens[i].type <= KeyWords["AND"] && tokens[i].type >= KeyWords["^"]){
-            str_expr = generate_operator(tokens[i].type, str_expr, tokens[i].token);
-        }else{
+        if(tokens[i].type >= KeyWords["AND"] && tokens[i].type <= KeyWords["^"]){
+            str_expr += generate_operator(tokens[i].type);
+        }
+        else if(tokens[i].type === KeyWords.String){
+            str_expr += "\""+tokens[i].token+"\"";
+        }
+        else{
             str_expr += tokens[i].token;
         }
     }
@@ -125,7 +139,7 @@ function generate_new_line(){
 }
 
 function generate_print(ids_list){
-    var str = "\"";
+    var str = "printf(\"";
     for(var i in ids_list){
         str +=  TYPE_TO_PRINTF_FORMAT[ids_list[i].data_type] + " ";
     }
@@ -135,6 +149,8 @@ function generate_print(ids_list){
         str += ", " + ids_list[i].token.token;
     }
     str += ");";
+
+    return str;
 }
 
 function generate_power_operator(base, exponent){
@@ -146,6 +162,19 @@ function generate_help_includes(){
             "#include <math.h>";
 }
 
+function generate_fun_args_list(args_types, args_names){
+    var str_list = "(";
+
+    for(var i in args_types){
+        str_list +=  resolve_type(args_types[i])+" "+convert_typed_var(args_names[i].token.token);
+        if(i < args_types.length - 1){
+            str_list += ", ";
+        }
+    }
+    str_list += ")"
+
+    return str_list;
+}
 
 function generate_var_declaration(var_name, var_type_id){
     return resolve_type(var_type_id) + " " + var_name + ";";
@@ -171,33 +200,51 @@ function build_babel(operation){
     return "";
 }
 
+function build_fun_declaration(operation) {
+    var return_type = resolve_type(operation.fun_id.data_type);
+    var id_name = convert_typed_var(operation.fun_id.token.token);
+
+    return return_type+" "+id_name+" "+generate_fun_args_list(operation.fun_id.args_types, operation.fun_id.args_names)+";";
+}
+
+function build_print(operation){
+    return generate_print(operation.list);
+}
+
+
 function build_goto(operation){
     return "goto " + find_label_by_num(operation.to) + ";";
 }
 
 function build_assign(operation){
-    return generate_var_assign(operation.identifier.token.token, generate_expression(operation.expression));
+    var id_name = convert_typed_var(operation.identifier.token.token);
+    return generate_var_assign(id_name, generate_expression(operation.expression));
 }
 
 function build_let(operation) {
-    return generate_var_declaration(operation.identifier.token.token, operation.identifier.data_type);
+    var id_name = convert_typed_var(operation.identifier.token.token);
+    return generate_var_declaration(id_name, operation.identifier.data_type);
 }
 
 function build_operation(qbs_operation, result_accum){
+
+    result_accum += build_babel(qbs_operation);
+
     switch(qbs_operation.type){
         case Operations.LET:
-            result_accum += build_babel(qbs_operation) + build_let(qbs_operation);
+            result_accum += build_let(qbs_operation);
             break;
 
         case Operations.ASSIGN:
-            result_accum += build_babel(qbs_operation) + build_assign(qbs_operation);
+            result_accum += build_assign(qbs_operation);
             break;
 
         case Operations.GOTO:
-            result_accum += build_babel(qbs_operation) + build_goto(qbs_operation);
+            result_accum += build_goto(qbs_operation);
             break;
 
         case Operations.PRINT:
+            result_accum += build_print(qbs_operation);
             break;
 
         case Operations.INPUT:
@@ -216,13 +263,14 @@ function build_operation(qbs_operation, result_accum){
             break;
 
         case Operations.DECLFUN:
+            FunDeclarations += build_fun_declaration(qbs_operation) + "\n";
             break;
 
         case Operations.DEFFUN:
             break;
     }
 
-    return result_accum;
+    return result_accum + generate_new_line();
 }
 
 function build_from_subtree(qbs_scope, result_accum){
@@ -231,7 +279,7 @@ function build_from_subtree(qbs_scope, result_accum){
     }
 
     for(var i in qbs_scope.operations){
-        result_accum = build_operation(qbs_scope.operations[i], result_accum) + generate_new_line();
+        result_accum = build_operation(qbs_scope.operations[i], result_accum);
     }
 
     return result_accum;
@@ -239,5 +287,14 @@ function build_from_subtree(qbs_scope, result_accum){
 
 function build_c_code(qbs_tree){
     Used_Labels = {};
-    return build_from_subtree(qbs_tree);
+    FunDeclarations = "";
+
+    var includes = generate_help_includes();
+    var code = build_from_subtree(qbs_tree);
+
+    return includes + "\n\n" +
+           FunDeclarations + "\n\n" +
+           "void main(){" + "\n" +
+           code +
+           "}";
 }

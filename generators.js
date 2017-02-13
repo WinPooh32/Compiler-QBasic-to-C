@@ -151,7 +151,7 @@ function mk_operation_dim(scope, id_token_idx, dims_array, type, label_val){
     return {
         type: Operations.DIM,
         label: label_val,
-        id: id,
+        identifier: id,
         sizes: dims_array
     };
 }

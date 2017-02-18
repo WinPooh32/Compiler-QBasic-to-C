@@ -111,10 +111,7 @@
                 | <Negate Exp> '/' <Mult Exp> 
                 | <Negate Exp> 
 
-<Negate Exp>  ::= '-' <Power Exp> 
-                | <Power Exp> 
-
-<Power Exp>   ::= <Power Exp> '^' <Value> 
+<Negate Exp>  ::= '-' <Value> 
                 | <Value> 
 
 <Value>       ::= '(' <Expression> ')'
